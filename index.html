@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Online Ausstellung Helga Sülzle-Thoma · 3D-Rundgang</title>
+<meta name="description" content="Virtueller 3D-Rundgang durch die Malerei und Fotografie von Helga Sülzle-Thoma vom Möningerberg bei Freystadt. Frei durch die Säle gehen oder einer fünfminütigen Führung folgen.">
+<style>
+  :root { --ink:#2a2622; --muted:#6b645b; --paper:#fbfaf7; --accent:#b5402a; }
+  * { box-sizing: border-box; }
+  html, body { margin:0; height:100%; overflow:hidden; background:#e9e6e0; font-family: Georgia, "Times New Roman", serif; color:var(--ink); -webkit-user-select:none; user-select:none; touch-action:none; }
+  #szene { position:fixed; inset:0; width:100%; height:100%; display:block; }
+  button { font:inherit; cursor:pointer; }
+  .leiste { position:fixed; top:14px; left:14px; right:14px; display:flex; align-items:flex-start; justify-content:space-between; gap:10px; pointer-events:none; z-index:5; }
+  .leiste > * { pointer-events:auto; }
+  .marke { background:rgba(251,250,247,.9); padding:10px 16px 9px; border-radius:6px; box-shadow:0 2px 12px rgba(0,0,0,.08); }
+  .marke b { display:block; font-size:17px; letter-spacing:.03em; font-weight:500; white-space:nowrap; }
+  #zur-homepage { display:none; font:12px Helvetica, Arial, sans-serif; color:var(--accent); text-decoration:none; margin-top:3px; }
+  body.allein #zur-homepage { display:block; }
+  .marke span { font-family:Helvetica, Arial, sans-serif; font-size:13px; color:var(--muted); }
+  .knoepfe { display:flex; flex-wrap:wrap; gap:6px; justify-content:flex-end; }
+  .knoepfe button, .k { background:rgba(251,250,247,.92); border:1px solid rgba(0,0,0,.08); border-radius:6px; padding:9px 13px; font-family:Helvetica, Arial, sans-serif; font-size:14px; color:var(--ink); box-shadow:0 2px 10px rgba(0,0,0,.06); }
+  .knoepfe button.aktiv { background:var(--ink); color:#fff; }
+  .knoepfe .gruppe { display:flex; gap:0; }
+  .knoepfe .gruppe button { border-radius:0; margin-left:-1px; }
+  .knoepfe .gruppe button:first-child { border-radius:6px 0 0 6px; }
+  .knoepfe .gruppe button:last-child { border-radius:0 6px 6px 0; }
+  #btn-fuehrung { background:var(--accent); color:#fff; border-color:var(--accent); }
+  #karte { position:fixed; right:14px; bottom:14px; width:300px; height:90px; border-radius:6px; box-shadow:0 2px 12px rgba(0,0,0,.12); cursor:crosshair; z-index:4; opacity:0; transition:opacity .6s; }
+  #karte.sichtbar, #karte:hover { opacity:1; }
+  body.tour-laeuft #karte { opacity:0 !important; pointer-events:none; }
+  #tipp { position:fixed; display:none; pointer-events:none; background:rgba(42,38,34,.88); color:#fff; padding:5px 9px; border-radius:4px; font:13px Helvetica, Arial, sans-serif; z-index:6; }
+  #hinweis { position:fixed; left:50%; top:78px; transform:translateX(-50%); background:rgba(42,38,34,.85); color:#fff; padding:9px 16px; border-radius:20px; font:14px Helvetica, Arial, sans-serif; opacity:0; transition:opacity .4s; pointer-events:none; z-index:6; text-align:center; max-width:90vw; }
+  #hinweis.sichtbar { opacity:1; }
+  /* Start */
+  #start { position:fixed; inset:0; z-index:20; display:flex; align-items:center; justify-content:center; background:radial-gradient(ellipse at center, rgba(251,250,247,.86), rgba(233,230,224,.97)); transition:opacity .6s; }
+  #start.weg { opacity:0; pointer-events:none; }
+  .startbox { text-align:center; padding:30px; max-width:860px; }
+  .startbox h1 { font-weight:500; letter-spacing:.04em; font-size:clamp(30px,6vw,60px); margin:0 0 8px; white-space:nowrap; }
+  .startbox p.vor { font-family:Helvetica, Arial, sans-serif; letter-spacing:.32em; text-transform:uppercase; font-size:14px; color:var(--muted); margin:0 0 10px; }
+  .startbox p.unter { font-family:Helvetica, Arial, sans-serif; color:var(--muted); margin:0 0 30px; font-size:16px; }
+  .startbox .wahl { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+  .startbox .wahl button { min-width:230px; padding:16px 22px; border-radius:8px; border:1px solid var(--ink); background:#fff; font-size:17px; }
+  .startbox .wahl button small { display:block; font-family:Helvetica, Arial, sans-serif; color:var(--muted); font-size:13px; margin-top:4px; }
+  .startbox .wahl button.haupt { background:var(--ink); color:#fff; }
+  .startbox .wahl button.haupt small { color:#d8d2c8; }
+  .startbox button:disabled { opacity:.5; cursor:wait; }
+  .startbox .steuer { margin-top:26px; font:13px/1.6 Helvetica, Arial, sans-serif; color:var(--muted); }
+  #erklaerung { margin:6px auto 0; max-width:720px; text-align:left; }
+  #erk-schritte { list-style:none; margin:0; padding:0; counter-reset:n; }
+  #erk-schritte li { counter-increment:n; display:grid; grid-template-columns:34px 140px 1fr; align-items:baseline; gap:6px; padding:9px 12px; border-radius:8px; font:15px/1.4 Helvetica, Arial, sans-serif; color:var(--muted); opacity:.45; transition:opacity .4s, background .4s, transform .4s; }
+  #erk-schritte li::before { content:counter(n); font:600 15px Georgia, serif; color:var(--accent); }
+  #erk-schritte li b { font:500 17px Georgia, serif; color:var(--ink); }
+  #erk-schritte li.gesehen { opacity:.75; }
+  #erk-schritte li.aktiv { opacity:1; background:#fff; box-shadow:0 2px 12px rgba(0,0,0,.08); transform:scale(1.03); color:var(--ink); }
+  body.touch #erk-schritte .d, body:not(.touch) #erk-schritte .t { display:none; }
+  #erk-leiste { height:4px; background:rgba(0,0,0,.08); border-radius:2px; overflow:hidden; margin:16px 0 8px; }
+  #erk-fort { height:100%; width:0; background:var(--accent); }
+  #erk-status { text-align:center; font:13px Helvetica, Arial, sans-serif; color:var(--muted); }
+  #erk-status button { border:0; background:none; color:var(--accent); text-decoration:underline; padding:0; font:inherit; }
+  #start .wahl, #start .steuer { display:none; }
+  #start.bereit .wahl { display:flex; animation:auf .6s ease; }
+  #start.bereit .steuer { display:block; animation:auf .6s ease; }
+  #start.bereit #erklaerung { display:none; }
+  @keyframes auf { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+  @media (max-width: 760px) { #erk-schritte li { grid-template-columns:26px 1fr; } #erk-schritte li > span { grid-column:2; } #erk-schritte li { padding:6px 8px; font-size:14px; } }
+  #ladeleiste { width:220px; height:3px; background:rgba(0,0,0,.08); margin:22px auto 0; border-radius:2px; overflow:hidden; transition:opacity .6s; }
+  #ladeleiste.fertig { opacity:0; }
+  #laden { height:100%; width:0; background:var(--accent); transition:width .3s; }
+  /* Lightbox */
+  #lightbox { position:fixed; inset:0; z-index:30; background:rgba(18,16,14,.94); display:none; }
+  #lightbox.offen { display:flex; }
+  #lb-buehne { flex:1; position:relative; overflow:hidden; display:flex; align-items:center; justify-content:center; touch-action:none; cursor:grab; }
+  #lb-bild { max-width:92%; max-height:92%; box-shadow:0 10px 40px rgba(0,0,0,.5); transform-origin:center center; will-change:transform; -webkit-user-drag:none; }
+  #lb-info { width:300px; background:var(--paper); padding:28px 24px; display:flex; flex-direction:column; gap:8px; }
+  #lb-titel { font-size:26px; margin:0; font-weight:500; }
+  #lb-technik { font:15px Helvetica, Arial, sans-serif; color:var(--ink); margin:0; }
+  #lb-saal { font:13px Helvetica, Arial, sans-serif; color:var(--muted); margin:0 0 14px; }
+  #lb-info .reihe { display:flex; gap:6px; }
+  #lb-info .reihe button { flex:1; }
+  #lb-info .tipp { margin-top:auto; font:12px/1.5 Helvetica, Arial, sans-serif; color:var(--muted); }
+  #lb-zu { position:absolute; top:14px; right:14px; z-index:2; }
+  /* Führung */
+  #fuehrung { position:fixed; left:50%; bottom:18px; transform:translateX(-50%); width:min(720px, calc(100vw - 340px)); background:rgba(251,250,247,.95); border-radius:10px; box-shadow:0 6px 30px rgba(0,0,0,.18); padding:16px 20px 14px; z-index:8; display:none; }
+  #fuehrung.offen { display:block; }
+  #fuehrung { transition: background .5s, box-shadow .5s, padding .4s; }
+  #fuehrung.kompakt { width:auto; background:rgba(251,250,247,.72); box-shadow:0 2px 10px rgba(0,0,0,.08); padding:6px 8px; }
+  #fuehrung.kompakt #f-kopf, #fuehrung.kompakt #f-text { display:none; }
+  #fuehrung.kompakt #f-balken { margin-bottom:6px; }
+  #fuehrung.kompakt #f-knoepfe button { padding:5px 9px; font-size:12px; }
+  #f-textknopf { display:none; }
+  #fuehrung.kompakt #f-textknopf { display:inline-block; }
+  #f-kopf { display:flex; justify-content:space-between; align-items:baseline; gap:10px; }
+  #f-titel { font-size:19px; font-weight:500; }
+  #f-schritt { font:12px Helvetica, Arial, sans-serif; color:var(--muted); white-space:nowrap; }
+  #f-text { font-size:17px; line-height:1.5; margin:8px 0 12px; min-height:3em; }
+  #f-balken { height:3px; background:rgba(0,0,0,.08); border-radius:2px; overflow:hidden; margin-bottom:12px; }
+  #f-fort { height:100%; background:var(--accent); width:0; transition:width .5s; }
+  #f-knoepfe { display:flex; gap:6px; flex-wrap:wrap; }
+  #f-knoepfe button { padding:7px 12px; }
+  /* Hilfe */
+  #hilfe { position:fixed; inset:0; z-index:25; background:rgba(18,16,14,.55); display:none; align-items:center; justify-content:center; }
+  #hilfe.offen { display:flex; }
+  #hilfe .box { background:var(--paper); border-radius:10px; padding:26px 30px; max-width:520px; font:15px/1.6 Helvetica, Arial, sans-serif; }
+  #hilfe h2 { font-family:Georgia, serif; font-weight:500; margin:0 0 10px; }
+  #hilfe td { padding:3px 14px 3px 0; vertical-align:top; }
+  #hilfe td:first-child { white-space:nowrap; color:var(--muted); }
+  /* Touch-Steuerkreuz */
+  #pad { position:fixed; left:14px; bottom:14px; display:none; grid-template-columns:repeat(3,54px); grid-template-rows:repeat(2,54px); gap:6px; z-index:7; }
+  body.touch #pad { display:grid; }
+  #pad button { background:rgba(251,250,247,.88); border:1px solid rgba(0,0,0,.1); border-radius:10px; font-size:22px; touch-action:none; }
+  #pad [data-pad=f] { grid-column:2; grid-row:1; } #pad [data-pad=l] { grid-column:1; grid-row:2; }
+  #pad [data-pad=b] { grid-column:2; grid-row:2; } #pad [data-pad=r] { grid-column:3; grid-row:2; }
+  @media (max-width: 760px) {
+    #karte { width:168px; height:50px; }
+    #pad { grid-template-columns:repeat(3,48px); grid-template-rows:repeat(2,48px); }
+    .marke b { font-size:15px; } .marke span { font-size:12px; }
+    .knoepfe button { padding:8px 9px; font-size:13px; }
+    #btn-voll, #btn-start-pos { display:none; }
+    #fuehrung { width:calc(100vw - 24px); bottom:auto; top:120px; padding:12px 14px; }
+    #fuehrung.kompakt { top:auto; bottom:80px; }
+    .marke b { font-size:13px; max-width:150px; white-space:normal; }
+    #btn-plan { display:none; }
+    #f-text { font-size:15px; }
+    #lightbox.offen { flex-direction:column; }
+    #lb-info { width:auto; padding:14px 16px; }
+    #lb-info .tipp { display:none; }
+    #lb-titel { font-size:20px; }
+  }
+</style>
+</head>
+<body>
+<canvas id="szene"></canvas>
+
+<div class="leiste">
+  <div class="marke"><b>Online Ausstellung Helga Sülzle-Thoma</b><span id="raumname">Foyer</span><a id="zur-homepage" href="https://www.suelzle-thoma.de/" target="_top">← suelzle-thoma.de</a></div>
+  <div class="knoepfe">
+    <button id="btn-fuehrung">Führung</button>
+    <div class="gruppe">
+      <button data-ansicht="gehen" class="aktiv" title="Auf Augenhöhe durch die Räume gehen">Rundgang</button>
+      <button data-ansicht="raum" title="Den Raum frei in alle Richtungen drehen">Raum frei</button>
+      <button data-ansicht="oben" title="Das ganze Museum von oben">Von oben</button>
+    </div>
+    <div class="gruppe">
+      <button id="btn-raum-zurueck" title="Voriger Raum">‹ Raum</button>
+      <button id="btn-raum-vor" title="Nächster Raum">Raum ›</button>
+    </div>
+    <button id="btn-plan" title="Lageplan dauerhaft zeigen">Plan</button>
+    <button id="btn-start-pos" title="Zurück zum Eingang">Eingang</button>
+    <button id="btn-hilfe" title="Bedienung">?</button>
+    <button id="btn-voll" title="Vollbild">⛶</button>
+  </div>
+</div>
+
+<canvas id="karte" width="600" height="180" title="Lageplan: hineinklicken, um dorthin zu gehen"></canvas>
+<div id="tipp"></div>
+<div id="hinweis"></div>
+
+<div id="pad">
+  <button data-pad="f" aria-label="vorwärts">▲</button>
+  <button data-pad="l" aria-label="links drehen">◀</button>
+  <button data-pad="b" aria-label="zurück">▼</button>
+  <button data-pad="r" aria-label="rechts drehen">▶</button>
+</div>
+
+<div id="fuehrung">
+  <div id="f-kopf"><div id="f-titel"></div><div id="f-schritt"></div></div>
+  <div id="f-text"></div>
+  <div id="f-balken"><div id="f-fort"></div></div>
+  <div id="f-knoepfe">
+    <button class="k" id="f-zurueck">⏮ Zurück</button>
+    <button class="k" id="f-pause">❚❚ Pause</button>
+    <button class="k" id="f-vor">Weiter ⏭</button>
+    <button class="k" id="f-textknopf">Text zeigen</button>
+    <button class="k" id="f-ton">🔊 Sprecherin</button>
+    <button class="k" id="f-ende">Führung beenden</button>
+  </div>
+</div>
+
+<div id="lightbox">
+  <div id="lb-buehne"><img id="lb-bild" alt=""><button class="k" id="lb-zu">✕ Schließen</button></div>
+  <div id="lb-info">
+    <h2 id="lb-titel"></h2>
+    <p id="lb-technik"></p>
+    <p id="lb-saal"></p>
+    <div class="reihe"><button class="k" id="lb-minus">− Kleiner</button><button class="k" id="lb-plus">+ Größer</button></div>
+    <div class="reihe"><button class="k" id="lb-zurueck">‹ Voriges</button><button class="k" id="lb-vor">Nächstes ›</button></div>
+    <p class="tipp">Mausrad oder zwei Finger zum Zoomen, ziehen zum Verschieben, Doppelklick für Detail. Pfeiltasten blättern, Esc schließt.</p>
+  </div>
+</div>
+
+<div id="hilfe">
+  <div class="box">
+    <h2>So bewegen Sie sich</h2>
+    <table>
+      <tr><td>Umsehen</td><td>Maus: linke Taste gedrückt halten und ziehen. Touchpad: drücken, gedrückt halten und ziehen. Handy: wischen</td></tr>
+      <tr><td>Gehen</td><td>Auf den Boden klicken. Maus: Rad drehen. Touchpad: zwei Finger hoch oder runter schieben. Oder Pfeiltasten. Handy: Steuerkreuz</td></tr>
+      <tr><td>Hingehen</td><td>Auf den Boden klicken, man geht dorthin</td></tr>
+      <tr><td>Bild ansehen</td><td>Bild anklicken: man geht davor. Noch einmal anklicken: groß ansehen. Zoomen mit Mausrad oder zwei Fingern auf dem Touchpad</td></tr>
+      <tr><td>Ansichten</td><td>Rundgang auf Augenhöhe, Raum frei in alle Richtungen drehen, ganze Ausstellung von oben</td></tr>
+      <tr><td>Raum für Raum</td><td>Mit „‹ Raum“ und „Raum ›“ zum vorigen oder nächsten Raum</td></tr>
+      <tr><td>Lageplan</td><td>Erscheint kurz beim Raumwechsel, mit „Plan“ dauerhaft. Hineinklicken springt dorthin</td></tr>
+      <tr><td>Führung</td><td>Rund fünf Minuten, mit Sprecherin oder nur Text, jederzeit anhalten</td></tr>
+    </table>
+    <p style="text-align:right;margin:16px 0 0"><button class="k" data-zu>Verstanden</button></p>
+  </div>
+</div>
+
+<div id="start">
+  <div class="startbox">
+    <p class="vor">Online Ausstellung</p>
+    <h1>Helga Sülzle-Thoma</h1>
+    <p class="unter">Malerei und Fotografie vom Möningerberg</p>
+    <div class="wahl">
+      <button id="btn-tour" class="haupt" disabled>Führung starten<small id="tour-dauer">ca. 5 Minuten</small></button>
+      <button id="btn-eintreten" disabled>Selbst umsehen<small>frei durch die Säle gehen</small></button>
+    </div>
+    <div class="steuer">Ziehen zum Umsehen · Boden oder Bild anklicken zum Hingehen · Bild noch einmal anklicken zum Vergrößern</div>
+    <div id="erklaerung">
+      <ol id="erk-schritte">
+        <li><b>Umsehen</b><span class="d">Maus: linke Taste gedrückt halten und ziehen.<br>Touchpad: Finger auf das Touchpad drücken, gedrückt halten und ziehen.</span><span class="t">Mit dem Finger über den Bildschirm wischen</span></li>
+        <li><b>Gehen</b><span class="d">Einfach auf den Boden klicken, Sie gehen dorthin. Oder: Maus: Rad nach vorn oder hinten drehen. Touchpad: zwei Finger nach oben oder unten schieben. Pfeiltasten gehen auch.</span><span class="t">Auf den Boden tippen, Sie gehen dorthin. Oder das Steuerkreuz unten links</span></li>
+        <li><b>Bilder ansehen</b><span class="d">Bild anklicken (Maus: linke Taste, Touchpad: drücken): Sie gehen davor. Noch einmal anklicken: groß ansehen. Zoomen mit dem Mausrad oder zwei Fingern auf dem Touchpad.</span><span class="t">Bild antippen: Sie gehen davor. Noch einmal antippen: groß ansehen, mit zwei Fingern zoomen</span></li>
+        <li><b>Raum für Raum</b><span>Oben mit „‹ Raum“ und „Raum ›“ zum vorigen oder nächsten Raum</span></li>
+        <li><b>Frei bewegen</b><span>„Raum frei“ dreht den Raum in alle Richtungen, „Von oben“ zeigt die ganze Ausstellung</span></li>
+      </ol>
+      <div id="erk-leiste"><div id="erk-fort"></div></div>
+      <div id="erk-status">Kurze Erklärung läuft · noch <span id="erk-sek">25</span> Sekunden · <button id="erk-weiter">überspringen</button></div>
+    </div>
+    <div id="ladeleiste"><div id="laden"></div></div>
+  </div>
+</div>
+
+<script type="module" src="museum.bundle.js"></script>
+</body>
+</html>
