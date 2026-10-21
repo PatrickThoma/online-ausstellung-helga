@@ -65,6 +65,7 @@
   #start.bereit #erklaerung { display:none; }
   @keyframes auf { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
   @media (max-width: 760px) { #erk-schritte li { grid-template-columns:26px 1fr; } #erk-schritte li > span { grid-column:2; } #erk-schritte li { padding:6px 8px; font-size:14px; } }
+  .wv-link { margin:14px 0 0; font:13px Helvetica, Arial, sans-serif; } .wv-link a { color:var(--muted); }
   #ladeleiste { width:220px; height:3px; background:rgba(0,0,0,.08); margin:22px auto 0; border-radius:2px; overflow:hidden; transition:opacity .6s; }
   #ladeleiste.fertig { opacity:0; }
   #laden { height:100%; width:0; background:var(--accent); transition:width .3s; }
@@ -203,6 +204,7 @@
       <tr><td>Raum für Raum</td><td>Mit „‹ Raum“ und „Raum ›“ zum vorigen oder nächsten Raum</td></tr>
       <tr><td>Lageplan</td><td>Erscheint kurz beim Raumwechsel, mit „Plan“ dauerhaft. Hineinklicken springt dorthin</td></tr>
       <tr><td>Führung</td><td>Rund fünf Minuten, mit Sprecherin oder nur Text, jederzeit anhalten</td></tr>
+      <tr><td>Werkverzeichnis</td><td><a href="https://www.suelzle-thoma.de/online-ausstellung/werkverzeichnis/" target="_top">Alle Werke mit Titel und Technik als Liste</a></td></tr>
     </table>
     <p style="text-align:right;margin:16px 0 0"><button class="k" data-zu>Verstanden</button></p>
   </div>
@@ -231,6 +233,7 @@
       <div id="erk-status">Kurze Erklärung läuft · noch <span id="erk-sek">25</span> Sekunden · <button id="erk-weiter">überspringen</button></div>
     </div>
     <div id="ladeleiste"><div id="laden"></div></div>
+    <p class="wv-link"><a href="https://www.suelzle-thoma.de/online-ausstellung/werkverzeichnis/" target="_top">Werkverzeichnis als Liste</a></p>
   </div>
 </div>
 
