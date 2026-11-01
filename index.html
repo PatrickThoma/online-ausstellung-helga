@@ -130,6 +130,15 @@
     #lb-info .tipp { display:none; }
     #lb-titel { font-size:20px; }
   }
+  /* Hans 01.11.2026: keine Texthinweise, kein Steuerkreuz, Bedienung blendet sich aus */
+  #pad, body.touch #pad, #hinweis, #tipp, #btn-hilfe, .startbox .steuer, #erklaerung, #lb-info .tipp, #f-textknopf, #f-ton, #fuehrung #f-kopf, #fuehrung #f-text { display:none !important; }
+  .leiste, #fuehrung, #karte { transition:opacity .8s; }
+  body.ui-ruhe .leiste, body.ui-ruhe #fuehrung { opacity:0; pointer-events:none; }
+  body.ui-ruhe .leiste * , body.ui-ruhe #fuehrung * { pointer-events:none; }
+  #fuehrung, #fuehrung.kompakt { width:auto; background:rgba(251,250,247,.72); box-shadow:0 2px 10px rgba(0,0,0,.08); padding:6px 8px; }
+  #fuehrung #f-balken { margin-bottom:6px; }
+  #fuehrung #f-knoepfe button { padding:5px 9px; font-size:12px; }
+  @media (max-width: 760px) { #fuehrung, #fuehrung.kompakt { top:auto; bottom:14px; width:auto; } }
 </style>
 </head>
 <body>
@@ -188,7 +197,7 @@
     <p id="lb-saal"></p>
     <div class="reihe"><button class="k" id="lb-minus">− Kleiner</button><button class="k" id="lb-plus">+ Größer</button></div>
     <div class="reihe"><button class="k" id="lb-zurueck">‹ Voriges</button><button class="k" id="lb-vor">Nächstes ›</button></div>
-    <p class="tipp">Mausrad oder zwei Finger zum Zoomen, ziehen zum Verschieben, Doppelklick für Detail. Pfeiltasten blättern, Esc schließt.</p>
+    
   </div>
 </div>
 
